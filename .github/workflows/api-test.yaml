@@ -13,15 +13,20 @@ jobs:
     runs-on: ubuntu-latest  # Chạy trên môi trường Ubuntu
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3  # Tải mã nguồn về runner
+        uses: actions/checkout@v3  # Lấy mã nguồn
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.7'  # Sử dụng Python 3.8
+          python-version: '3.7'  # Dùng Python 3.7 (hỗ trợ PyRestTest)
 
-      - name: Install PyRestTest
-        run: pip install pyresttest
+      - name: Install dependencies
+        run: |
+          sudo apt update && sudo apt upgrade -y
+          sudo apt install -y build-essential libssl-dev libcurl4-openssl-dev python3-dev python3-pip
+          CFLAGS="-I/usr/include" LDFLAGS="-L/usr/lib" pip install --no-cache-dir --compile pycurl
+          pip install future
+          pip install pyresttest
 
       - name: Run API Tests
         run: pyresttest https://jsonplaceholder.typicode.com test_http.yaml
