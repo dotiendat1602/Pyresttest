@@ -1,0 +1,27 @@
+name: API Testing with PyRestTest
+
+on:
+  push:
+    branches:
+      - main  # Chạy khi có push lên nhánh main
+  pull_request:
+    branches:
+      - main  # Chạy khi có PR vào nhánh main
+
+jobs:
+  api_test:
+    runs-on: ubuntu-latest  # Chạy trên môi trường Ubuntu
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3  # Tải mã nguồn về runner
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.7'  # Sử dụng Python 3.8
+
+      - name: Install PyRestTest
+        run: pip install pyresttest
+
+      - name: Run API Tests
+        run: pyresttest https://jsonplaceholder.typicode.com test_http.yaml

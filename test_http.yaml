@@ -1,0 +1,19 @@
+- config:
+    - testset: "JSONPlaceholder API Test"
+    - timeout: 5
+
+- test:
+    - name: "Check if API is reachable"
+    - url: "https://jsonplaceholder.typicode.com/posts"
+    - method: "GET"
+    - expected_status: 200
+
+- benchmark:
+    - name: "Basic get"
+    - url: "https://jsonplaceholder.typicode.com/posts"
+    - warmup_runs: 5
+    - benchmark_runs: 50
+    - metrics:
+        - total_time: mean
+        - total_time: median
+        - speed_download: median
