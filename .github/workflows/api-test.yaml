@@ -29,4 +29,4 @@ jobs:
           pip install pyresttest
 
       - name: Run API Tests
-        run: pyresttest https://jsonplaceholder.typicode.com test_http.yaml
+        run: pyresttest https://jsonplaceholder.typicode.com test_httpreq.yaml
