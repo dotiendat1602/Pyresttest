@@ -1,0 +1,81 @@
+- config:
+    - testset: "JSONPlaceholder API Test" # Tên của TestGroup
+    - timeout: 5 # Timeout cho mỗi test trong TestGroup
+
+
+- test:
+    - name: "Check if API is reachable"
+    - url: "https://jsonplaceholder.typicode.com/posts"
+    - method: "GET"
+    - expected_status: 200
+
+- test:
+    - name: "Retrieve a specific post"
+    - url: "https://jsonplaceholder.typicode.com/posts/1"
+    - method: "GET"
+    - expected_status: 200
+    - validators:
+        - compare: {jsonpath_mini: "id", comparator: "ne", expected: null}
+
+- test:
+    - name: "Create a new post"
+    - url: "https://jsonplaceholder.typicode.com/posts"
+    - method: "POST"
+    - headers:
+        Content-Type: "application/json"
+    - body: '{"title": "foo", "body": "bar", "userId": 1}'
+    - expected_status: 201
+    - validators:
+        - compare: {jsonpath_mini: "id", comparator: "ne", expected: null}
+        - compare:
+            jsonpath_mini: "title"
+            expected: "foo"
+    - extract_binds:
+        userId: {jsonpath_mini: "userId"}
+
+- test:
+    - name: "Retrieve a specific post 2"
+    - url: {template: "https://jsonplaceholder.typicode.com/posts?userId=$userId"}
+    - method: "GET"
+    - expected_status: 200
+
+- test:
+    - name: "Update an existing post"
+    - url: "https://jsonplaceholder.typicode.com/posts/1"
+    - method: "PUT"
+    - headers:
+        Content-Type: "application/json"
+    - body: '{"id": 1, "title": "updated title", "body": "updated body", "userId": 1}'
+    - expected_status: 200
+    - validators:
+        - compare:
+            jsonpath_mini: "title"
+            expected: "updated title"
+
+- test:
+    - name: "Partially update a post"
+    - url: "https://jsonplaceholder.typicode.com/posts/1"
+    - method: "PATCH"
+    - headers:
+        Content-Type: "application/json"
+    - body: '{"title": "partially updated title"}'
+    - expected_status: 200
+    - validators:
+        - compare:
+            jsonpath_mini: "title"
+            expected: "partially updated title"
+- test:
+    - name: "Delete a post"
+    - url: "https://jsonplaceholder.typicode.com/posts/1"
+    - method: "DELETE"
+    - expected_status: 200
+
+- benchmark:
+    - name: "Basic get"
+    - url: "https://jsonplaceholder.typicode.com/posts"
+    - warmup_runs: 5
+    - 'benchmark_runs': '50'
+    - metrics:
+        - total_time: mean
+        - total_time: median
+        - speed_download: median
