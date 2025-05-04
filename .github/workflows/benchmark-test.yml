@@ -1,0 +1,32 @@
+name: API Testing with PyRestTest
+
+on:
+  push:
+    branches:
+      - main  # Chạy khi có push lên nhánh main
+  pull_request:
+    branches:
+      - main  # Chạy khi có PR vào nhánh main
+
+jobs:
+  api_test:
+    runs-on: ubuntu-22.04  # Chạy trên môi trường Ubuntu
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3  # Lấy mã nguồn
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.7'  # Dùng Python 3.7 (hỗ trợ PyRestTest)
+
+      - name: Install dependencies
+        run: |
+          sudo apt update && sudo apt upgrade -y
+          sudo apt install -y build-essential libssl-dev libcurl4-openssl-dev python3-dev python3-pip
+          CFLAGS="-I/usr/include" LDFLAGS="-L/usr/lib" pip install --no-cache-dir --compile pycurl
+          pip install future
+          pip install pyresttest
+
+      - name: Run API Tests
+        run: pyresttest https://jsonplaceholder.typicode.com test_benchmark.yaml
